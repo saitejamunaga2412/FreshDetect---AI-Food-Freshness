@@ -7,6 +7,7 @@ const Scanner = () => {
   const [isScanning, setIsScanning] = useState(false);
   const [result, setResult] = useState(null);
   const [isCameraActive, setIsCameraActive] = useState(false);
+  const [error, setError] = useState(null);
   
   const fileInputRef = useRef(null);
   const videoRef = useRef(null);
@@ -70,17 +71,48 @@ const Scanner = () => {
     }
   };
 
-  const handleScan = () => {
+  const handleScan = async () => {
     setIsScanning(true);
-    // Mocking an API call
-    setTimeout(() => {
-      setIsScanning(false);
-      setResult({
-        score: 85,
-        status: 'Fresh',
-        confidence: 94.2
+    setError(null);
+    try {
+      // If we have a selected image, we need to convert it to a file
+      // selectedImage is a data URL (from camera) or object URL (from file input)
+      let fileToSend = null;
+      
+      if (selectedImage.startsWith('data:image')) {
+        // Convert base64 to Blob
+        const response = await fetch(selectedImage);
+        const blob = await response.blob();
+        fileToSend = new File([blob], "camera-capture.jpg", { type: "image/jpeg" });
+      } else {
+        // From file input
+        fileToSend = fileInputRef.current.files[0];
+      }
+
+      if (!fileToSend) {
+        throw new Error("No valid image found");
+      }
+
+      const formData = new FormData();
+      formData.append('image', fileToSend);
+
+      const response = await fetch('http://localhost:5000/api/analysis/scan', {
+        method: 'POST',
+        body: formData,
       });
-    }, 2000);
+
+      if (!response.ok) {
+        throw new Error('Analysis failed. Make sure backend is running.');
+      }
+
+      const data = await response.json();
+      setResult(data);
+    } catch (err) {
+      console.error(err);
+      setError(err.message || 'Error communicating with AI engine');
+    } finally {
+      setIsScanning(false);
+    }
   };
 
   return (
@@ -149,6 +181,12 @@ const Scanner = () => {
               'Analyze Freshness'
             )}
           </button>
+
+          {error && (
+            <div className="error-message stagger-5 animate-fade-in" style={{ color: 'red', marginTop: '1rem', textAlign: 'center' }}>
+              {error}
+            </div>
+          )}
         </div>
 
         {result && (

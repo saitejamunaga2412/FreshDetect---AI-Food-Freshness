@@ -15,9 +15,11 @@ app.use(express.json());
 // Routes
 const authRoutes = require('./routes/auth');
 const inventoryRoutes = require('./routes/inventory');
+const analysisRoutes = require('./routes/analysis');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/inventory', inventoryRoutes);
+app.use('/api/analysis', analysisRoutes);
 
 app.get('/', (req, res) => {
   res.send('Food Freshness API is running');
