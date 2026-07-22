@@ -33,7 +33,23 @@ router.post('/scan', upload.single('image'), async (req, res) => {
 
     const aiResult = pythonResponse.data.analysis;
 
-    // Here you could save the result to MongoDB if needed (e.g., tying it to a user's scan history)
+    // Save to database if connected
+    if (mongoose.connection.readyState === 1) {
+        try {
+            const newAnalysis = new Analysis({
+                imagePath: req.file.path,
+                result: aiResult,
+                score: aiResult.score,
+                status: aiResult.status,
+                confidence: aiResult.confidence
+            });
+            await newAnalysis.save();
+        } catch (dbErr) {
+            console.warn("Could not save to DB:", dbErr);
+        }
+    } else {
+        console.warn("Presentation Mode: Bypassing database save.");
+    }
 
     res.json(aiResult);
   } catch (error) {

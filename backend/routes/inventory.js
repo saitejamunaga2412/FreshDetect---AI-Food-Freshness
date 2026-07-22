@@ -1,12 +1,24 @@
 const express = require('express');
 const router = express.Router();
 const FoodItem = require('../models/FoodItem');
+const mongoose = require('mongoose');
+
+// Dummy data for presentation mode
+const DUMMY_INVENTORY = [
+  { _id: '1', name: 'Apple', category: 'Fruits', status: 'Fresh', score: 95, batchId: 'B-001', location: 'A-1' },
+  { _id: '2', name: 'Banana', category: 'Fruits', status: 'Spoiled', score: 20, batchId: 'B-002', location: 'A-2' },
+  { _id: '3', name: 'Carrot', category: 'Vegetables', status: 'Fresh', score: 90, batchId: 'B-003', location: 'B-1' },
+  { _id: '4', name: 'Tomato', category: 'Vegetables', status: 'Fresh', score: 85, batchId: 'B-004', location: 'B-2' }
+];
 
 // Middleware to protect routes can be added here
 
 // Get all inventory items
 router.get('/', async (req, res) => {
   try {
+    if (mongoose.connection.readyState !== 1) {
+        return res.json(DUMMY_INVENTORY);
+    }
     const items = await FoodItem.find().sort({ createdAt: -1 }).populate('addedBy', 'name');
     res.json(items);
   } catch (error) {
