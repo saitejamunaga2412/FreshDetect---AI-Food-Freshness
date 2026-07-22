@@ -33,7 +33,8 @@ const connectDB = async () => {
         if (!uri || uri.length < 20 || !uri.startsWith('mongodb')) {
             console.log("No valid MONGODB_URI detected. Spinning up in-memory MongoDB for zero-config presentation...");
             const { MongoMemoryServer } = require('mongodb-memory-server');
-            const mongoServer = await MongoMemoryServer.create();
+            // Render uses Debian 12 which requires MongoDB 7.0.3+
+            const mongoServer = await MongoMemoryServer.create({ instance: { version: '7.0.14' } });
             uri = mongoServer.getUri();
         }
         await mongoose.connect(uri);
