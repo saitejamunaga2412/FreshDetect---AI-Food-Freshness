@@ -3,6 +3,7 @@ const router = express.Router();
 const multer = require('multer');
 const axios = require('axios');
 const FormData = require('form-data');
+const mongoose = require('mongoose');
 
 // Set up multer for handling memory storage (we'll forward it directly to Python)
 const storage = multer.memoryStorage();
