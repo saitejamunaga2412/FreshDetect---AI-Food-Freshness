@@ -1,0 +1,31 @@
+services:
+  # Python AI Engine Service
+  - type: web
+    name: freshdetect-engine
+    env: python
+    rootDir: "Image Analysis & Freshness"
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+
+  # Node.js Backend Service
+  - type: web
+    name: freshdetect-api
+    env: node
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        generateValue: true # Replace in dashboard with actual MongoDB URI
+      - key: JWT_SECRET
+        generateValue: true
+      - key: PYTHON_API_URL
+        fromService:
+          type: web
+          name: freshdetect-engine
+          envVarKey: RENDER_EXTERNAL_URL

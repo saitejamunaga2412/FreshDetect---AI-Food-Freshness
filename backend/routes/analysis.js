@@ -23,11 +23,12 @@ router.post('/scan', upload.single('image'), async (req, res) => {
     });
 
     // Call Python FastAPI service
-    // Assuming Python service runs on localhost:8000
-    const pythonResponse = await axios.post('http://localhost:8000/api/analyze', formData, {
+    // Use Python service from environment variable or fallback to localhost
+    const pythonApiUrl = process.env.PYTHON_API_URL || 'http://localhost:8000';
+    const pythonResponse = await axios.post(`${pythonApiUrl}/api/analyze`, formData, {
       headers: {
         ...formData.getHeaders(),
-      },
+      }
     });
 
     const aiResult = pythonResponse.data.analysis;
