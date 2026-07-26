@@ -34,6 +34,11 @@ router.post('/scan', upload.single('image'), async (req, res) => {
             }
         });
         aiResult = pythonResponse.data.analysis;
+        
+        // If Python API is alive but failed to load the model (e.g., Render Free Tier Out-Of-Memory), force Fallback Mode
+        if (aiResult && aiResult.status === "ERROR") {
+            throw new Error("Python model failed to load (OOM). Triggering Fallback AI.");
+        }
     } catch (pythonError) {
         console.warn("Python API failed (likely asleep). Using Fallback AI result.", pythonError.message);
         // Fallback mock AI result for presentation mode simulating 2-stage pipeline
