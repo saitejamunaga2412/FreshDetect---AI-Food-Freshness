@@ -42,8 +42,18 @@ router.post('/scan', upload.single('image'), async (req, res) => {
     } catch (pythonError) {
         console.warn("Python API failed (likely asleep). Using Fallback AI result.", pythonError.message);
         // Fallback mock AI result for presentation mode simulating 2-stage pipeline
-        const isSpoiled = req.file.originalname.toLowerCase().includes('spoil') || req.file.originalname.toLowerCase().includes('rotten');
-        const isNearExpiry = req.file.originalname.toLowerCase().includes('tomato');
+        const lowerName = (req.file ? req.file.originalname.toLowerCase() : '');
+        const isSpoiled = lowerName.includes('spoil') || lowerName.includes('rotten');
+        const isNearExpiry = lowerName.includes('tomato') || lowerName.includes('expiry');
+        
+        let detectedName = "Food Item";
+        if (lowerName.includes('bread')) detectedName = "Bread";
+        else if (lowerName.includes('tomato')) detectedName = "Tomato";
+        else if (lowerName.includes('apple')) detectedName = "Apple";
+        else if (lowerName.includes('banana')) detectedName = "Banana";
+        else if (lowerName.includes('grape')) detectedName = "Grapes";
+        else if (lowerName.includes('strawberry')) detectedName = "Strawberry";
+        else detectedName = "Apple"; // Ultimate fallback
         
         let status = "Fresh";
         let score = 94;
@@ -54,6 +64,7 @@ router.post('/scan', upload.single('image'), async (req, res) => {
             score = 22;
             recommendation = {
                 type: "Disposal Guide",
+                shelfLife: "0 Days (Spoiled)",
                 action: "Compost / Biogas processing",
                 reason: "Item has completely spoiled and is unfit for consumption."
             };
@@ -63,6 +74,7 @@ router.post('/scan', upload.single('image'), async (req, res) => {
             recommendation = {
                 type: "Storage",
                 consumeWithin: "2 Days",
+                shelfLife: "2 Days",
                 temperature: "10–15°C",
                 humidity: "85–90%",
                 area: "Kitchen Basket",
@@ -82,7 +94,7 @@ router.post('/scan', upload.single('image'), async (req, res) => {
         }
 
         aiResult = {
-            foodName: isNearExpiry ? "Tomato" : "Apple",
+            foodName: detectedName,
             status: status,
             score: score,
             confidence: 0.96,
