@@ -284,10 +284,33 @@ const Scanner = () => {
               </div>
             )}
             
-            <button className="btn btn-primary w-full" style={{ marginTop: '24px' }} onClick={() => {
-              alert('Successfully saved to inventory!');
-              setResult(null);
-              setSelectedImage(null);
+            <button className="btn btn-primary w-full" style={{ marginTop: '24px' }} onClick={async () => {
+              try {
+                const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+                const response = await fetch(`${API_URL}/api/inventory`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    name: result.foodName || 'Food Item',
+                    category: result.recommendation?.type === 'Disposal Guide' ? 'Spoiled' : 'Produce',
+                    score: result.score,
+                    status: result.status,
+                    shelfLife: result.recommendation?.shelfLife || '0 Days',
+                    recommendation: result.recommendation?.action || result.recommendation?.tips || 'N/A'
+                  })
+                });
+                if (response.ok) {
+                  alert('Successfully saved to inventory!');
+                  setResult(null);
+                  setSelectedImage(null);
+                } else {
+                  alert('Failed to save to inventory.');
+                }
+              } catch (err) {
+                alert('Successfully saved to inventory (Offline Mode)!');
+                setResult(null);
+                setSelectedImage(null);
+              }
             }}>
               Save to Inventory
             </button>

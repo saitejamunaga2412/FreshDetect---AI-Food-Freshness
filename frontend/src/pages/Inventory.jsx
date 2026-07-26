@@ -33,7 +33,9 @@ const Inventory = () => {
         </div>
         <div className="actions">
           <button className="btn btn-secondary"><Filter size={18} /> Filter</button>
-          <button className="btn btn-primary"><Plus size={18} /> Add Item</button>
+          <button className="btn btn-primary" onClick={() => alert('Please use the Freshness Scanner page to automatically add items with AI analysis!')}>
+            <Plus size={18} /> Add Item
+          </button>
         </div>
       </div>
 

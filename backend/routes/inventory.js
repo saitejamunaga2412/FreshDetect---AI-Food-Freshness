@@ -33,6 +33,16 @@ router.get('/', async (req, res) => {
 // Add new food item
 router.post('/', async (req, res) => {
   try {
+    if (mongoose.connection.readyState !== 1) {
+        // Presentation mode: add to dummy inventory array
+        const newItem = {
+            _id: Math.random().toString(36).substr(2, 9),
+            ...req.body,
+            createdAt: new Date()
+        };
+        DUMMY_INVENTORY.unshift(newItem);
+        return res.status(201).json(newItem);
+    }
     const newItem = new FoodItem(req.body);
     await newItem.save();
     res.status(201).json(newItem);
