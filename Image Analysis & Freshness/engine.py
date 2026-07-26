@@ -46,8 +46,13 @@ def assess_freshness(image_bytes: bytes):
         confidence = float(predictions[0][predicted_idx]) * 100
         predicted_class = class_names[predicted_idx]
         
+        # Extract food name assuming format like "Apple_Rotten" or "Banana_Fresh"
+        food_name = predicted_class.split('_')[0]
+        # Format it nicely (e.g. replace dashes)
+        food_name = food_name.replace('-', ' ').title()
+        
         # Determine status and freshness score based on class name
-        if "_Rotten" in predicted_class or "_spoiled" in predicted_class.lower():
+        if "_Rotten" in predicted_class or "_spoiled" in predicted_class.lower() or "Spoiled" in predicted_class:
             status = "SPOILED"
             # Since the fast model might have low confidence, ensure score is appropriately low
             score = min(25, max(5, int(100 - confidence)))
@@ -58,6 +63,7 @@ def assess_freshness(image_bytes: bytes):
             
         # The AI confidence is what the model actually output
         return {
+            "foodName": food_name,
             "score": score,
             "status": status,
             "confidence": round(confidence, 1),
