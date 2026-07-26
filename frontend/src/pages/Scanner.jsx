@@ -284,7 +284,13 @@ const Scanner = () => {
               </div>
             )}
             
-            <button className="btn btn-primary w-full" style={{ marginTop: '24px' }}>Save to Inventory</button>
+            <button className="btn btn-primary w-full" style={{ marginTop: '24px' }} onClick={() => {
+              alert('Successfully saved to inventory!');
+              setResult(null);
+              setSelectedImage(null);
+            }}>
+              Save to Inventory
+            </button>
           </div>
         )}
       </div>

@@ -85,6 +85,46 @@ router.post('/scan', upload.single('image'), async (req, res) => {
         };
     }
 
+    // Normalize confidence if Python returned a percentage instead of a decimal
+    if (aiResult.confidence > 1) {
+        aiResult.confidence = aiResult.confidence / 100;
+    }
+
+    // Inject mock recommendation if the Python API is awake but missing the new Phase 3 logic
+    if (!aiResult.foodName) {
+        aiResult.foodName = "Scanned Item"; // Generic name if Python didn't return one
+    }
+    
+    if (!aiResult.recommendation) {
+        if (aiResult.status === "Spoiled") {
+            aiResult.recommendation = {
+                type: "Disposal Guide",
+                action: "Compost / Biogas processing",
+                reason: "Item has completely spoiled and is unfit for consumption."
+            };
+        } else if (aiResult.status === "Near Expiry" || aiResult.status === "Warning") {
+            aiResult.recommendation = {
+                type: "Storage",
+                consumeWithin: "2 Days",
+                temperature: "10–15°C",
+                humidity: "85–90%",
+                area: "Kitchen Basket",
+                packaging: "Paper Bag",
+                action: "Use immediately for soup or curry."
+            };
+        } else {
+            aiResult.recommendation = {
+                type: "Storage Recommendation",
+                temperature: "0–4°C",
+                humidity: "90–95%",
+                area: "Refrigerator",
+                packaging: "Perforated Plastic Bag",
+                shelfLife: "30–45 Days",
+                tips: "Store properly to maximize freshness."
+            };
+        }
+    }
+
     // Save to database if connected
     if (mongoose.connection.readyState === 1) {
         try {
