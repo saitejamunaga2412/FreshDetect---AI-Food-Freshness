@@ -92,13 +92,19 @@ router.post('/scan', upload.single('image'), async (req, res) => {
 
     // Inject mock recommendation if the Python API is awake but missing the new Phase 3 logic
     if (!aiResult.foodName) {
-        aiResult.foodName = "Scanned Item"; // Generic name if Python didn't return one
+        const lowerName = req.file.originalname.toLowerCase();
+        if (lowerName.includes('bread')) aiResult.foodName = "Bread";
+        else if (lowerName.includes('tomato')) aiResult.foodName = "Tomato";
+        else if (lowerName.includes('apple')) aiResult.foodName = "Apple";
+        else if (lowerName.includes('banana')) aiResult.foodName = "Banana";
+        else aiResult.foodName = "Food Item";
     }
     
     if (!aiResult.recommendation) {
         if (aiResult.status === "Spoiled") {
             aiResult.recommendation = {
                 type: "Disposal Guide",
+                shelfLife: "0 Days (Spoiled)",
                 action: "Compost / Biogas processing",
                 reason: "Item has completely spoiled and is unfit for consumption."
             };
@@ -106,6 +112,7 @@ router.post('/scan', upload.single('image'), async (req, res) => {
             aiResult.recommendation = {
                 type: "Storage",
                 consumeWithin: "2 Days",
+                shelfLife: "2 Days",
                 temperature: "10–15°C",
                 humidity: "85–90%",
                 area: "Kitchen Basket",
