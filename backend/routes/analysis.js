@@ -36,12 +36,52 @@ router.post('/scan', upload.single('image'), async (req, res) => {
         aiResult = pythonResponse.data.analysis;
     } catch (pythonError) {
         console.warn("Python API failed (likely asleep). Using Fallback AI result.", pythonError.message);
-        // Fallback mock AI result for presentation mode
+        // Fallback mock AI result for presentation mode simulating 2-stage pipeline
         const isSpoiled = req.file.originalname.toLowerCase().includes('spoil') || req.file.originalname.toLowerCase().includes('rotten');
+        const isNearExpiry = req.file.originalname.toLowerCase().includes('tomato');
+        
+        let status = "Fresh";
+        let score = 94;
+        let recommendation = {};
+        
+        if (isSpoiled) {
+            status = "Spoiled";
+            score = 22;
+            recommendation = {
+                type: "Disposal Guide",
+                action: "Compost / Biogas processing",
+                reason: "Item has completely spoiled and is unfit for consumption."
+            };
+        } else if (isNearExpiry) {
+            status = "Near Expiry";
+            score = 45;
+            recommendation = {
+                type: "Storage",
+                consumeWithin: "2 Days",
+                temperature: "10–15°C",
+                humidity: "85–90%",
+                area: "Kitchen Basket",
+                packaging: "Paper Bag",
+                action: "Use immediately for soup or curry."
+            };
+        } else {
+            recommendation = {
+                type: "Storage Recommendation",
+                temperature: "0–4°C",
+                humidity: "90–95%",
+                area: "Refrigerator Vegetable Drawer",
+                packaging: "Perforated Plastic Bag",
+                shelfLife: "30–45 Days",
+                tips: "Keep away from bananas and ethylene producers."
+            };
+        }
+
         aiResult = {
-            status: isSpoiled ? "Spoiled" : "Fresh",
-            score: isSpoiled ? 22 : 94,
-            confidence: 0.96
+            foodName: isNearExpiry ? "Tomato" : "Apple",
+            status: status,
+            score: score,
+            confidence: 0.96,
+            recommendation: recommendation
         };
     }
 

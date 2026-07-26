@@ -191,28 +191,98 @@ const Scanner = () => {
         </div>
 
         {result && (
-          <div className="glass-card result-section animate-fade-in">
-            <div className="result-header">
-              <CheckCircle size={32} color="var(--success)" />
-              <h2>Analysis Complete</h2>
+          <div className="glass-card result-section animate-fade-in" style={{ padding: '24px' }}>
+            <div className="result-header" style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '16px' }}>
+              <CheckCircle size={32} color={result.status === 'Spoiled' ? 'var(--danger)' : result.status === 'Near Expiry' ? 'var(--warning)' : 'var(--success)'} />
+              <div>
+                <h2 style={{ margin: 0, fontSize: '1.5rem' }}>{result.foodName || 'Food Item'} Identified</h2>
+                <span className={`badge badge-${result.status.toLowerCase().replace(' ', '-')}`} style={{ marginTop: '8px', display: 'inline-block', fontSize: '1rem', padding: '4px 12px' }}>
+                  Status: {result.status}
+                </span>
+              </div>
             </div>
             
-            <div className="result-details">
-              <div className="result-stat">
-                <span>Freshness Score</span>
-                <strong style={{ color: result.score > 70 ? 'var(--success)' : 'var(--danger)' }}>
+            <div className="result-details" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '24px' }}>
+              <div className="result-stat" style={{ backgroundColor: 'rgba(0,0,0,0.2)', padding: '16px', borderRadius: '12px' }}>
+                <span style={{ fontSize: '0.9rem', color: '#94a3b8' }}>Freshness Score</span>
+                <strong style={{ fontSize: '2rem', color: result.score > 70 ? 'var(--success)' : result.score > 30 ? 'var(--warning)' : 'var(--danger)' }}>
                   {result.score}%
                 </strong>
               </div>
-              <div className="result-stat">
-                <span>Status</span>
-                <span className={`badge badge-${result.status.toLowerCase()}`}>{result.status}</span>
-              </div>
-              <div className="result-stat">
-                <span>AI Confidence</span>
-                <strong>{result.confidence}%</strong>
+              <div className="result-stat" style={{ backgroundColor: 'rgba(0,0,0,0.2)', padding: '16px', borderRadius: '12px' }}>
+                <span style={{ fontSize: '0.9rem', color: '#94a3b8' }}>AI Confidence</span>
+                <strong style={{ fontSize: '2rem' }}>{(result.confidence * 100).toFixed(0)}%</strong>
               </div>
             </div>
+
+            {/* Recommendation Engine UI */}
+            {result.recommendation && (
+              <div className="recommendation-section" style={{ 
+                backgroundColor: result.status === 'Spoiled' ? 'rgba(239, 68, 68, 0.1)' : 'rgba(59, 130, 246, 0.1)', 
+                border: `1px solid ${result.status === 'Spoiled' ? 'rgba(239, 68, 68, 0.3)' : 'rgba(59, 130, 246, 0.3)'}`,
+                borderRadius: '12px', padding: '20px' 
+              }}>
+                <h3 style={{ margin: '0 0 16px 0', color: result.status === 'Spoiled' ? '#ef4444' : '#3b82f6', fontSize: '1.2rem' }}>
+                  {result.recommendation.type}
+                </h3>
+                
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '0.95rem' }}>
+                  {result.recommendation.temperature && (
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span style={{ color: '#94a3b8' }}>Temperature:</span>
+                      <strong>{result.recommendation.temperature}</strong>
+                    </div>
+                  )}
+                  {result.recommendation.humidity && (
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span style={{ color: '#94a3b8' }}>Humidity:</span>
+                      <strong>{result.recommendation.humidity}</strong>
+                    </div>
+                  )}
+                  {result.recommendation.area && (
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span style={{ color: '#94a3b8' }}>Storage Area:</span>
+                      <strong>{result.recommendation.area}</strong>
+                    </div>
+                  )}
+                  {result.recommendation.packaging && (
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span style={{ color: '#94a3b8' }}>Packaging:</span>
+                      <strong>{result.recommendation.packaging}</strong>
+                    </div>
+                  )}
+                  {result.recommendation.consumeWithin && (
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span style={{ color: '#94a3b8' }}>Consume Within:</span>
+                      <strong style={{ color: '#f59e0b' }}>{result.recommendation.consumeWithin}</strong>
+                    </div>
+                  )}
+                  {result.recommendation.shelfLife && (
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span style={{ color: '#94a3b8' }}>Estimated Shelf Life:</span>
+                      <strong style={{ color: '#10b981' }}>{result.recommendation.shelfLife}</strong>
+                    </div>
+                  )}
+                  
+                  {/* Action/Tips Block */}
+                  {(result.recommendation.tips || result.recommendation.action) && (
+                    <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+                      {result.recommendation.tips && (
+                        <p style={{ margin: 0, fontStyle: 'italic', color: '#e2e8f0' }}>💡 Tip: {result.recommendation.tips}</p>
+                      )}
+                      {result.recommendation.action && (
+                        <p style={{ margin: 0, fontWeight: 'bold', color: result.status === 'Spoiled' ? '#ef4444' : '#e2e8f0' }}>
+                          ⚡ Action: {result.recommendation.action}
+                        </p>
+                      )}
+                      {result.recommendation.reason && (
+                        <p style={{ margin: '8px 0 0 0', fontSize: '0.85rem', color: '#94a3b8' }}>Reason: {result.recommendation.reason}</p>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
             
             <button className="btn btn-primary w-full" style={{ marginTop: '24px' }}>Save to Inventory</button>
           </div>

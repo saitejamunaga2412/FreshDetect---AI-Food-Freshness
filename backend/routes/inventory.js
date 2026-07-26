@@ -3,12 +3,16 @@ const router = express.Router();
 const FoodItem = require('../models/FoodItem');
 const mongoose = require('mongoose');
 
-// Dummy data for presentation mode
+// Enhanced Dummy data for presentation mode containing Phase 3 Recommendation logic
 const DUMMY_INVENTORY = [
-  { _id: '1', name: 'Apple', category: 'Fruits', status: 'Fresh', score: 95, batchId: 'B-001', location: 'A-1' },
-  { _id: '2', name: 'Banana', category: 'Fruits', status: 'Spoiled', score: 20, batchId: 'B-002', location: 'A-2' },
-  { _id: '3', name: 'Carrot', category: 'Vegetables', status: 'Fresh', score: 90, batchId: 'B-003', location: 'B-1' },
-  { _id: '4', name: 'Tomato', category: 'Vegetables', status: 'Fresh', score: 85, batchId: 'B-004', location: 'B-2' }
+  { _id: '1', name: 'Apple', category: 'Fruits', status: 'Fresh', score: 95, batchId: 'B-001', location: 'A-1', 
+    shelfLife: '30–45 Days', recommendation: 'Keep away from bananas and ethylene producers.' },
+  { _id: '2', name: 'Banana', category: 'Fruits', status: 'Spoiled', score: 20, batchId: 'B-002', location: 'A-2',
+    shelfLife: '0 Days', recommendation: 'Compost / Biogas processing.' },
+  { _id: '3', name: 'Tomato', category: 'Vegetables', status: 'Near Expiry', score: 45, batchId: 'B-004', location: 'B-2',
+    shelfLife: '2 Days', recommendation: 'Use immediately for soup or curry.' },
+  { _id: '4', name: 'Carrot', category: 'Vegetables', status: 'Fresh', score: 90, batchId: 'B-003', location: 'B-1',
+    shelfLife: '14-21 Days', recommendation: 'Store in refrigerator crisper drawer.' }
 ];
 
 // Middleware to protect routes can be added here

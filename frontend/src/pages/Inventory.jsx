@@ -1,14 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Plus, Search, Filter } from 'lucide-react';
 import './Inventory.css';
 
 const Inventory = () => {
-  const [items] = useState([
-    { id: 1, name: 'Fuji Apples', category: 'Fruit', status: 'Fresh', score: 95, expiry: '2026-07-20' },
-    { id: 2, name: 'Roma Tomatoes', category: 'Vegetable', status: 'Warning', score: 45, expiry: '2026-07-13' },
-    { id: 3, name: 'Baby Spinach', category: 'Vegetable', status: 'Spoiled', score: 10, expiry: '2026-07-10' },
-    { id: 4, name: 'Avocados', category: 'Fruit', status: 'Fresh', score: 88, expiry: '2026-07-18' },
-  ]);
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchInventory = async () => {
+      try {
+        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+        const response = await fetch(`${API_URL}/api/inventory`);
+        if (response.ok) {
+          const data = await response.json();
+          setItems(data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch inventory:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchInventory();
+  }, []);
 
   return (
     <div className="inventory-container">
@@ -24,42 +38,44 @@ const Inventory = () => {
       </div>
 
       <div className="glass-card table-container">
-        <table className="inventory-table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Category</th>
-              <th>Freshness Score</th>
-              <th>Status</th>
-              <th>Expiry Date</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {items.map((item) => (
-              <tr key={item.id}>
-                <td><strong>{item.name}</strong></td>
-                <td>{item.category}</td>
-                <td>
-                  <div className="score-bar-container">
-                    <div className="score-bar" style={{ 
-                      width: `${item.score}%`,
-                      backgroundColor: item.score > 70 ? 'var(--success)' : item.score > 30 ? 'var(--warning)' : 'var(--danger)'
-                    }}></div>
-                  </div>
-                  <span className="score-text">{item.score}%</span>
-                </td>
-                <td>
-                  <span className={`badge badge-${item.status.toLowerCase()}`}>{item.status}</span>
-                </td>
-                <td>{item.expiry}</td>
-                <td>
-                  <button className="btn btn-secondary" style={{ padding: '6px 12px', fontSize: '0.8rem' }}>Edit</button>
-                </td>
+        {loading ? (
+          <div style={{ padding: '2rem', textAlign: 'center' }}>Loading inventory...</div>
+        ) : (
+          <table className="inventory-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Freshness Score</th>
+                <th>Status</th>
+                <th>Shelf Life</th>
+                <th>Recommendation</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {items.map((item) => (
+                <tr key={item._id || Math.random()}>
+                  <td><strong>{item.name}</strong></td>
+                  <td>{item.category}</td>
+                  <td>
+                    <div className="score-bar-container">
+                      <div className="score-bar" style={{ 
+                        width: `${item.score}%`,
+                        backgroundColor: item.score > 70 ? 'var(--success)' : item.score > 30 ? 'var(--warning)' : 'var(--danger)'
+                      }}></div>
+                    </div>
+                    <span className="score-text">{item.score}%</span>
+                  </td>
+                  <td>
+                    <span className={`badge badge-${item.status.toLowerCase().replace(' ', '-')}`}>{item.status}</span>
+                  </td>
+                  <td>{item.shelfLife || 'N/A'}</td>
+                  <td style={{ maxWidth: '200px', fontSize: '0.85rem' }}>{item.recommendation || 'No recommendation'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
   );
