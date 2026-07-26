@@ -101,14 +101,16 @@ router.post('/scan', upload.single('image'), async (req, res) => {
     }
     
     if (!aiResult.recommendation) {
-        if (aiResult.status === "Spoiled") {
+        const currentStatus = (aiResult.status || '').toLowerCase();
+        
+        if (currentStatus === "spoiled") {
             aiResult.recommendation = {
                 type: "Disposal Guide",
                 shelfLife: "0 Days (Spoiled)",
                 action: "Compost / Biogas processing",
                 reason: "Item has completely spoiled and is unfit for consumption."
             };
-        } else if (aiResult.status === "Near Expiry" || aiResult.status === "Warning") {
+        } else if (currentStatus === "near expiry" || currentStatus === "warning") {
             aiResult.recommendation = {
                 type: "Storage",
                 consumeWithin: "2 Days",
