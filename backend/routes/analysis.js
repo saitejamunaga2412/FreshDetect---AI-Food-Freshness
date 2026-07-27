@@ -82,14 +82,45 @@ router.post('/scan', upload.single('image'), async (req, res) => {
                 action: "Use immediately for soup or curry."
             };
         } else {
+            let temp = "0–4°C";
+            let hum = "90–95%";
+            let area = "Refrigerator";
+            let pack = "Perforated Plastic Bag";
+            let sl = "30–45 Days";
+            let tip = "Store properly to maximize freshness.";
+            
+            if (detectedName === "Banana") {
+                temp = "15–20°C";
+                hum = "85–90%";
+                area = "Countertop";
+                pack = "Open Air or Banana Tree";
+                sl = "5–7 Days";
+                tip = "Store at room temperature. Do not refrigerate to avoid peel blackening.";
+            } else if (detectedName === "Apple") {
+                tip = "Keep away from bananas and ethylene producers.";
+            } else if (detectedName === "Tomato") {
+                temp = "12–15°C";
+                area = "Countertop";
+                pack = "Open Air";
+                sl = "7–14 Days";
+                tip = "Store at room temperature to preserve flavor and texture.";
+            } else if (detectedName === "Bread") {
+                temp = "15–25°C";
+                hum = "Low";
+                area = "Bread Box or Pantry";
+                pack = "Paper or Bread Bag";
+                sl = "3–5 Days";
+                tip = "Store in a cool, dry place. Avoid refrigeration which causes staling.";
+            }
+
             recommendation = {
                 type: "Storage Recommendation",
-                temperature: "0–4°C",
-                humidity: "90–95%",
-                area: "Refrigerator Vegetable Drawer",
-                packaging: "Perforated Plastic Bag",
-                shelfLife: "30–45 Days",
-                tips: "Keep away from bananas and ethylene producers."
+                temperature: temp,
+                humidity: hum,
+                area: area,
+                packaging: pack,
+                shelfLife: sl,
+                tips: tip
             };
         }
 
