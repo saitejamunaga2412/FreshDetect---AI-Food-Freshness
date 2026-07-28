@@ -116,6 +116,92 @@ const Scanner = () => {
     }
   };
 
+  // Computer Vision Highlighting Logic
+  useEffect(() => {
+    if (result && result.status === 'Spoiled' && selectedImage) {
+      setTimeout(() => {
+        const img = document.getElementById('scanned-image');
+        const canvas = document.getElementById('highlight-canvas');
+        if (img && canvas) {
+          const ctx = canvas.getContext('2d');
+          canvas.width = img.clientWidth;
+          canvas.height = img.clientHeight;
+          
+          const tempCanvas = document.createElement('canvas');
+          tempCanvas.width = img.naturalWidth;
+          tempCanvas.height = img.naturalHeight;
+          const tempCtx = tempCanvas.getContext('2d', { willReadFrequently: true });
+          tempCtx.drawImage(img, 0, 0);
+          
+          try {
+            const cols = 15, rows = 15;
+            const cellW = tempCanvas.width / cols;
+            const cellH = tempCanvas.height / rows;
+            let darkestCell = null, minBrightness = 255;
+            
+            for (let row = 0; row < rows; row++) {
+              for (let col = 0; col < cols; col++) {
+                 const cellData = tempCtx.getImageData(col * cellW, row * cellH, cellW, cellH).data;
+                 let totalBrightness = 0, validPixels = 0;
+                 for (let i = 0; i < cellData.length; i += 4) {
+                   const r = cellData[i], g = cellData[i+1], b = cellData[i+2];
+                   const brightness = (r + g + b) / 3;
+                   if (brightness > 20 && brightness < 240) { // Ignore pitch black backgrounds and pure white glares
+                     totalBrightness += brightness;
+                     validPixels++;
+                   }
+                 }
+                 if (validPixels > (cellData.length / 4) * 0.2) { 
+                   const avgBrightness = totalBrightness / validPixels;
+                   if (avgBrightness < minBrightness) {
+                     minBrightness = avgBrightness;
+                     darkestCell = { row, col };
+                   }
+                 }
+              }
+            }
+            
+            if (darkestCell) {
+              const scaleX = canvas.width / tempCanvas.width;
+              const scaleY = canvas.height / tempCanvas.height;
+              
+              const startX = Math.max(0, (darkestCell.col - 1)) * cellW;
+              const startY = Math.max(0, (darkestCell.row - 1)) * cellH;
+              const endX = Math.min(cols, (darkestCell.col + 2)) * cellW;
+              const endY = Math.min(rows, (darkestCell.row + 2)) * cellH;
+              
+              const finalX = startX * scaleX;
+              const finalY = startY * scaleY;
+              const finalW = (endX - startX) * scaleX;
+              const finalH = (endY - startY) * scaleY;
+              
+              ctx.strokeStyle = '#ef4444'; // Red-500
+              ctx.lineWidth = 3;
+              ctx.setLineDash([6, 4]); // Cyber/tech dashed line
+              ctx.strokeRect(finalX, finalY, finalW, finalH);
+              
+              // Draw crosshairs
+              ctx.beginPath();
+              ctx.moveTo(finalX - 10, finalY + finalH/2);
+              ctx.lineTo(finalX + 10, finalY + finalH/2);
+              ctx.moveTo(finalX + finalW/2, finalY - 10);
+              ctx.lineTo(finalX + finalW/2, finalY + 10);
+              ctx.stroke();
+              
+              ctx.fillStyle = '#ef4444';
+              ctx.font = 'bold 12px Inter, sans-serif';
+              ctx.fillText('DEFECT DETECTED', finalX, finalY - 8);
+              ctx.fillStyle = 'rgba(239, 68, 68, 0.2)'; // semi-transparent red fill
+              ctx.fillRect(finalX, finalY, finalW, finalH);
+            }
+          } catch(e) {
+            console.error("Canvas processing error:", e);
+          }
+        }
+      }, 300); // Wait for DOM to render image properly
+    }
+  }, [result, selectedImage]);
+
   return (
     <div className="scanner-container">
       <div className="scanner-layout">
@@ -149,8 +235,14 @@ const Scanner = () => {
                 </div>
               </div>
             ) : selectedImage ? (
-              <div className="image-preview-container">
-                <img src={selectedImage} alt="Food item" className="image-preview" />
+              <div className="image-preview-container" style={{ position: 'relative' }}>
+                <img src={selectedImage} alt="Food item" className="image-preview" id="scanned-image" crossOrigin="anonymous" />
+                {result && result.status === 'Spoiled' && (
+                  <canvas 
+                    id="highlight-canvas"
+                    style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'none' }}
+                  ></canvas>
+                )}
                 <div className="preview-overlay">
                   <button className="btn btn-secondary" onClick={(e) => {
                     e.stopPropagation();
