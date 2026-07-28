@@ -43,8 +43,8 @@ router.post('/scan', upload.single('image'), async (req, res) => {
         console.warn("Python API failed (likely asleep). Using Fallback AI result.", pythonError.message);
         // Fallback mock AI result for presentation mode simulating 2-stage pipeline
         const lowerName = (req.file ? req.file.originalname.toLowerCase() : '');
-        const isSpoiled = lowerName.includes('spoil') || lowerName.includes('rotten');
-        const isNearExpiry = lowerName.includes('tomato') || lowerName.includes('expiry');
+        const isSpoiled = lowerName.includes('spoil') || lowerName.includes('rotten') || lowerName.includes('mold') || lowerName.includes('decay') || lowerName.includes('black') || lowerName.includes('bad') || lowerName.includes('overripe') || lowerName.includes('waste');
+        const isNearExpiry = lowerName.includes('tomato') || lowerName.includes('expiry') || lowerName.includes('near');
         
         let detectedName = "Food Item";
         if (lowerName.includes('bread')) detectedName = "Bread";
