@@ -138,6 +138,7 @@ const Scanner = () => {
             const cellW = tempCanvas.width / cols;
             const cellH = tempCanvas.height / rows;
             let darkestCell = null, minBrightness = 255;
+            const defectiveCells = [];
             
             for (let row = 0; row < rows; row++) {
               for (let col = 0; col < cols; col++) {
@@ -153,6 +154,12 @@ const Scanner = () => {
                  }
                  if (validPixels > (cellData.length / 4) * 0.2) { 
                    const avgBrightness = totalBrightness / validPixels;
+                   
+                   // If the cell is very dark (rotten), add it to the cluster
+                   if (avgBrightness < 80) {
+                     defectiveCells.push({ row, col });
+                   }
+                   
                    if (avgBrightness < minBrightness) {
                      minBrightness = avgBrightness;
                      darkestCell = { row, col };
@@ -161,14 +168,26 @@ const Scanner = () => {
               }
             }
             
-            if (darkestCell) {
+            let targetCells = defectiveCells.length > 0 ? defectiveCells : (darkestCell ? [darkestCell] : []);
+            
+            if (targetCells.length > 0) {
               const scaleX = canvas.width / tempCanvas.width;
               const scaleY = canvas.height / tempCanvas.height;
               
-              const startX = Math.max(0, (darkestCell.col - 1)) * cellW;
-              const startY = Math.max(0, (darkestCell.row - 1)) * cellH;
-              const endX = Math.min(cols, (darkestCell.col + 2)) * cellW;
-              const endY = Math.min(rows, (darkestCell.row + 2)) * cellH;
+              // Find the boundaries that encompass all defective cells
+              let minCol = cols, maxCol = 0, minRow = rows, maxRow = 0;
+              targetCells.forEach(cell => {
+                if (cell.col < minCol) minCol = cell.col;
+                if (cell.col > maxCol) maxCol = cell.col;
+                if (cell.row < minRow) minRow = cell.row;
+                if (cell.row > maxRow) maxRow = cell.row;
+              });
+              
+              // Add a slight 1-cell padding around the defect area
+              const startX = Math.max(0, minCol - 1) * cellW;
+              const startY = Math.max(0, minRow - 1) * cellH;
+              const endX = Math.min(cols, maxCol + 2) * cellW;
+              const endY = Math.min(rows, maxRow + 2) * cellH;
               
               const finalX = startX * scaleX;
               const finalY = startY * scaleY;
@@ -190,7 +209,7 @@ const Scanner = () => {
               
               ctx.fillStyle = '#ef4444';
               ctx.font = 'bold 12px Inter, sans-serif';
-              ctx.fillText('DEFECT DETECTED', finalX, finalY - 8);
+              ctx.fillText('EXTENSIVE DEFECT DETECTED', finalX, finalY - 8);
               ctx.fillStyle = 'rgba(239, 68, 68, 0.2)'; // semi-transparent red fill
               ctx.fillRect(finalX, finalY, finalW, finalH);
             }
