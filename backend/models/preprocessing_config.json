@@ -1,0 +1,16 @@
+{
+    "feature_columns": [
+        "temp",
+        "humid_(%)",
+        "light_(fux)",
+        "co2_(pmm)"
+    ],
+    "target_column": "class",
+    "fruit_column": "fruit",
+    "encoding_information": {
+        "class": {
+            "Bad": 0,
+            "Good": 1
+        }
+    }
+}

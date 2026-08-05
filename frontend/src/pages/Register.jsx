@@ -3,11 +3,13 @@ import { useNavigate, Link } from 'react-router-dom';
 import { User, Lock, Mail, Shield } from 'lucide-react';
 import './Register.css';
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const Register = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState('Staff');
+  const [role, setRole] = useState('Consumer');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -18,7 +20,7 @@ const Register = () => {
     setLoading(true);
     
     try {
-      const response = await fetch('http://localhost:5000/api/auth/register', {
+      const response = await fetch(`${API_URL}/api/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -53,7 +55,7 @@ const Register = () => {
         </div>
         
         {error && (
-          <div className="stagger-1 animate-fade-in" style={{ backgroundColor: 'rgba(239, 68, 68, 0.2)', color: '#ef4444', padding: '12px', borderRadius: '8px', marginBottom: '16px', fontSize: '0.9rem', border: '1px solid rgba(239, 68, 68, 0.5)' }}>
+          <div className="stagger-1 animate-fade-in" style={{ backgroundColor: 'rgba(239, 68, 68, 0.2)', color: 'var(--danger)', padding: '12px', borderRadius: '8px', marginBottom: '16px', fontSize: '0.9rem', border: '1px solid rgba(239, 68, 68, 0.5)' }}>
             {error}
           </div>
         )}
@@ -113,8 +115,11 @@ const Register = () => {
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
               >
-                <option value="Staff">Staff</option>
-                <option value="Admin">Admin</option>
+                <option value="Consumer">Consumer</option>
+                <option value="Retail Manager">Retail Manager</option>
+                <option value="Warehouse Operator">Warehouse Operator</option>
+                <option value="Food Quality Inspector">Food Quality Inspector</option>
+                <option value="Administrator">Administrator</option>
               </select>
             </div>
           </div>

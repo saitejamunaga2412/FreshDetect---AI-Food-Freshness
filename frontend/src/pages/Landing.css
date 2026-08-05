@@ -1,0 +1,451 @@
+.landing-page {
+  width: 100%;
+  min-height: 100vh;
+  background-color: var(--bg-primary);
+  overflow-x: hidden;
+}
+
+section {
+  padding: 100px 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 64px;
+}
+
+.section-header h2 {
+  font-size: 2.5rem;
+  margin-bottom: 16px;
+  color: var(--text-primary);
+}
+
+.section-header p {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Hero Section */
+.hero-section {
+  padding-top: 180px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  align-items: center;
+}
+
+.hero-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
+}
+
+.badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  border-radius: 99px;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  color: var(--success);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.hero-content h1 {
+  font-size: 3.5rem;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+.text-gradient {
+  background: linear-gradient(to right, var(--success), var(--accent-primary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero-subtitle {
+  font-size: 1.15rem;
+  color: var(--text-secondary);
+  max-width: 480px;
+  line-height: 1.6;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.btn-lg {
+  padding: 14px 28px;
+  font-size: 1.05rem;
+}
+
+/* Hero Visual / Mockup */
+.hero-visual {
+  position: relative;
+}
+
+.hero-dashboard-mockup {
+  width: 100%;
+  aspect-ratio: 16/10;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  border-radius: 12px;
+  box-shadow: 0 24px 50px -12px rgba(0, 0, 0, 0.5);
+  background: var(--bg-secondary);
+  border: 1px solid var(--glass-border);
+}
+
+.mockup-header {
+  height: 32px;
+  border-bottom: 1px solid var(--glass-border);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 16px;
+  background: var(--bg-overlay);
+}
+
+.mockup-dots {
+  display: flex;
+  gap: 6px;
+}
+.mockup-dots span {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: #3f3f46;
+}
+.mockup-dots span:nth-child(1) { background: var(--danger); }
+.mockup-dots span:nth-child(2) { background: var(--warning); }
+.mockup-dots span:nth-child(3) { background: var(--accent-primary); }
+
+.mockup-url {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  background: var(--border-subtle);
+  padding: 4px 12px;
+  border-radius: 4px;
+  flex: 1;
+  text-align: center;
+}
+
+.mockup-body {
+  display: flex;
+  flex: 1;
+}
+
+.mockup-sidebar {
+  width: 20%;
+  border-right: 1px solid var(--glass-border);
+  background: rgba(0,0,0,0.1);
+}
+
+.mockup-content {
+  flex: 1;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.mockup-cards {
+  display: flex;
+  gap: 12px;
+}
+
+.m-card {
+  flex: 1;
+  height: 60px;
+  border-radius: 8px;
+  background: var(--bg-overlay);
+  border: 1px solid var(--border-subtle);
+}
+
+.mockup-chart {
+  flex: 1;
+  border-radius: 8px;
+  background: var(--bg-overlay);
+  border: 1px solid var(--border-subtle);
+}
+
+.floating-card {
+  position: absolute;
+  top: 40%;
+  right: -30px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.f-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+.f-score {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--success);
+}
+.f-sub {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+/* Benefits */
+.benefits-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.benefit-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.b-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+/* Workflow */
+.workflow-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  position: relative;
+}
+
+.w-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  flex: 1;
+  z-index: 2;
+}
+
+.w-icon-wrapper {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--glass-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.w-step h4 {
+  font-size: 1.1rem;
+  margin-bottom: 8px;
+  color: var(--text-primary);
+}
+.w-step p {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  max-width: 200px;
+}
+
+.w-connector {
+  flex: 1;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--glass-border), transparent);
+  margin-top: 32px;
+  z-index: 1;
+}
+
+/* Tech Stack */
+.tech-card {
+  display: flex;
+  padding: 64px;
+  gap: 64px;
+  align-items: center;
+}
+
+.tech-content h2 {
+  font-size: 2rem;
+  margin-bottom: 8px;
+  color: var(--text-primary);
+}
+
+.tech-content p {
+  color: var(--text-secondary);
+  margin-bottom: 32px;
+}
+
+.tech-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.t-tag {
+  background: var(--border-subtle);
+  border: 1px solid var(--border-strong);
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+}
+
+.tech-graphic {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.orbit-container {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.core {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: var(--accent-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: var(--text-primary);
+  z-index: 10;
+  box-shadow: 0 0 30px var(--accent-glow);
+}
+
+.orbit {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px dashed var(--border-stronger);
+  animation: spin linear infinite;
+}
+
+.orbit-1 {
+  width: 140px; height: 140px;
+  animation-duration: 10s;
+}
+.orbit-2 {
+  width: 220px; height: 220px;
+  animation-duration: 15s;
+  animation-direction: reverse;
+}
+
+@keyframes spin { 100% { transform: rotate(360deg); } }
+
+/* CTA */
+.cta-section {
+  text-align: center;
+  background: radial-gradient(circle at center, rgba(16, 185, 129, 0.1), transparent 50%);
+}
+
+.cta-section h2 {
+  font-size: 2.5rem;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+}
+
+.cta-section p {
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+  margin-bottom: 32px;
+}
+
+.public-footer {
+  border-top: 1px solid var(--glass-border);
+  padding: 32px 24px;
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.f-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.f-links {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+@media (max-width: 1024px) {
+  .hero-section {
+    grid-template-columns: 1fr;
+    text-align: center;
+    padding-top: 120px;
+  }
+  .hero-content {
+    align-items: center;
+  }
+  .hero-actions {
+    justify-content: center;
+  }
+  .floating-card {
+    right: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .benefits-grid {
+    grid-template-columns: 1fr;
+  }
+  .workflow-container {
+    flex-direction: column;
+    gap: 32px;
+  }
+  .w-connector {
+    display: none;
+  }
+  .tech-card {
+    flex-direction: column;
+    padding: 32px;
+    text-align: center;
+  }
+  .tech-tags {
+    justify-content: center;
+  }
+  .hero-content h1 {
+    font-size: 2.5rem;
+  }
+}

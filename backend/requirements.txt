@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+motor
+pyjwt
+python-multipart
+pydantic-settings
+pydantic[email]
+passlib[bcrypt]
+ultralytics
+opencv-python
