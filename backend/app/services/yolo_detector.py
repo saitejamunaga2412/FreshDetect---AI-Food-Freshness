@@ -16,7 +16,7 @@ class YoloDetector:
             "..",
             "..",
             "weights",
-            "best.pt"
+            "fruitseg22_yolov8n_seg.pt"
         ))
         
         logger.info(f"[YoloDetector] Loading model from absolute path: {self.model_path}")
@@ -34,11 +34,10 @@ class YoloDetector:
         self.confidence_threshold = float(os.getenv("MIN_DETECTION_CONFIDENCE", "0.40"))
         logger.info(f"[YoloDetector] Using confidence threshold: {self.confidence_threshold}")
 
-    def _normalize_class_name(self, raw_class_name: str) -> tuple[str, str]:
-        # Example: "carrot_fresh" -> ("Carrot", "Fresh"), "apple_rotten" -> ("Apple", "Rotten")
+    def _normalize_class_name(self, raw_class_name: str) -> str:
+        # Strip freshness indicators to only return the base food name
         parts = raw_class_name.rsplit("_", 1)
         base_class = parts[0]
-        visual_condition = parts[1].title() if len(parts) > 1 else "Unknown"
         
         # Title case to match backend sets: "carrot" -> "Carrot"
         normalized = base_class.title()
@@ -47,7 +46,7 @@ class YoloDetector:
         mapping = {
             "Bellpepper": "Capsicum"
         }
-        return mapping.get(normalized, normalized), visual_condition
+        return mapping.get(normalized, normalized)
 
     def _get_food_type(self, food_name: str) -> str:
         if food_name in self.fruit_classes:
@@ -76,7 +75,7 @@ class YoloDetector:
                 cls_id = int(result.probs.top1)
                 conf = float(result.probs.top1conf)
                 raw_food_name = self.model.names[cls_id]
-                normalized_name, visual_condition = self._normalize_class_name(raw_food_name)
+                normalized_name = self._normalize_class_name(raw_food_name)
                 food_type = self._get_food_type(normalized_name)
                 bbox = [] # No bbox for classification
                 
@@ -84,7 +83,6 @@ class YoloDetector:
                     "class_id": cls_id,
                     "raw_name": raw_food_name,
                     "normalized_name": normalized_name,
-                    "visual_condition": visual_condition,
                     "confidence": round(conf, 4),
                     "food_type": food_type,
                     "bbox": bbox
@@ -106,7 +104,6 @@ class YoloDetector:
                     best_detection = {
                         "food_name": normalized_name,
                         "food_type": food_type,
-                        "visual_condition": visual_condition,
                         "raw_name": raw_food_name,
                         "detection_confidence": round(conf, 4),
                         "bbox": bbox,
@@ -120,7 +117,7 @@ class YoloDetector:
                     cls_id = int(box.cls[0])
                     conf = float(box.conf[0])
                     raw_food_name = self.model.names[cls_id]
-                    normalized_name, visual_condition = self._normalize_class_name(raw_food_name)
+                    normalized_name = self._normalize_class_name(raw_food_name)
                     food_type = self._get_food_type(normalized_name)
                     bbox = [int(x) for x in box.xyxy[0].tolist()]
                     
@@ -128,7 +125,6 @@ class YoloDetector:
                         "class_id": cls_id,
                         "raw_name": raw_food_name,
                         "normalized_name": normalized_name,
-                        "visual_condition": visual_condition,
                         "confidence": round(conf, 4),
                         "food_type": food_type,
                         "bbox": bbox
@@ -151,7 +147,6 @@ class YoloDetector:
                             best_detection = {
                                 "food_name": normalized_name,
                                 "food_type": food_type,
-                                "visual_condition": visual_condition,
                                 "raw_name": raw_food_name,
                                 "detection_confidence": round(conf, 4),
                                 "bbox": bbox,
@@ -163,8 +158,27 @@ class YoloDetector:
         if filtered_detections:
             logger.info(f"[YoloDetector] Filtered Detections: {len(filtered_detections)} removed. {filtered_detections}")
 
+        segmented_image_path = None
+        if results and len(results) > 0:
+            import cv2
+            import uuid
+            from app.core.config import settings
+            try:
+                res = results[0]
+                annotated_frame = res.plot()
+                seg_dir = os.path.join(settings.UPLOAD_DIR, "segmentation_results")
+                if not os.path.exists(seg_dir):
+                    os.makedirs(seg_dir, exist_ok=True)
+                seg_filename = f"seg_{uuid.uuid4().hex[:8]}.jpg"
+                cv2.imwrite(os.path.join(seg_dir, seg_filename), annotated_frame)
+                segmented_image_path = f"/uploads/segmentation_results/{seg_filename}"
+                logger.info(f"[YoloDetector] Saved segmentation mask to {segmented_image_path}")
+            except Exception as e:
+                logger.error(f"[YoloDetector] Failed to generate/save segmentation mask: {e}")
+
         if best_detection:
             logger.info(f"[YoloDetector] Final Accepted Object: {best_detection['food_name']} with confidence {best_detection['detection_confidence']}")
+            best_detection['segmented_image_url'] = segmented_image_path
         else:
             logger.warning("[YoloDetector] No valid objects passed filtering criteria.")
 
@@ -173,7 +187,8 @@ class YoloDetector:
             return {
                 "food_name": None,
                 "raw_detections": raw_detections,
-                "filtered_detections": filtered_detections
+                "filtered_detections": filtered_detections,
+                "segmented_image_url": segmented_image_path
             }
             
         return best_detection

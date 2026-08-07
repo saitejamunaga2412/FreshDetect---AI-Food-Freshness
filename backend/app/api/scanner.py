@@ -230,6 +230,7 @@ async def scan_food(
             "freshness_category": freshness_category,
             "yolo_class": detection.get("raw_name"),
             "environment_score": storage_score,
+            "segmented_image": detection.get("segmented_image_url"),
             "weighted_scores": {
                 "visual_condition": visual_score_text,
                 "storage": storage_score,

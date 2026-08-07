@@ -4,7 +4,7 @@ import sys
 from ultralytics import YOLO
 
 def test():
-    model = YOLO(r"weights\best.pt")
+    model = YOLO(r"weights\fruitseg22_yolov8n_seg.pt")
     image = r"dataset\SplitDataset\test\carrot\fresh\freshCarrot (1).jpeg"
     res = model.predict(image)[0]
     print("Boxes:", res.boxes)

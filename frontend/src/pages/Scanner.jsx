@@ -132,6 +132,7 @@ export default function Scanner() {
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [saveQuantity, setSaveQuantity] = useState(1);
   const [duplicateBatch, setDuplicateBatch] = useState(null);
+  const [showSegmentation, setShowSegmentation] = useState(true);
   
   // Environmental Variables State
   const [envTemp, setEnvTemp] = useState(20.0);
@@ -235,6 +236,7 @@ export default function Scanner() {
     setSelectedImage(null);
     setSelectedFile(null);
     setErrorMsg(null);
+    setShowSegmentation(true);
   };
 
   const clearImage = (e) => {
@@ -420,7 +422,24 @@ export default function Scanner() {
               </div>
             ) : selectedImage ? (
               <div className="preview-view">
-                <img src={selectedImage} alt="Uploaded food" className={`p-img ${isScanning ? 'img-scanning' : ''}`} />
+                <img 
+                  src={result && result.segmented_image && showSegmentation ? `${API_URL}${result.segmented_image}` : selectedImage} 
+                  alt="Uploaded food" 
+                  className={`p-img ${isScanning ? 'img-scanning' : ''}`} 
+                />
+                
+                {result && result.segmented_image && (
+                  <div className="segmentation-toggle" style={{ position: 'absolute', top: '10px', right: '10px', zIndex: 10 }}>
+                    <button 
+                      className={`glass-btn ${showSegmentation ? 'active-toggle' : ''}`} 
+                      onClick={(e) => { e.stopPropagation(); setShowSegmentation(!showSegmentation); }}
+                      style={{ background: showSegmentation ? 'var(--accent-primary)' : 'rgba(0,0,0,0.5)', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: '20px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}
+                    >
+                      {showSegmentation ? 'Show Original' : 'Show Segmentation'}
+                    </button>
+                  </div>
+                )}
+
                 {!isScanning && (
                   <div className="preview-overlay">
                     <div className="overlay-actions">

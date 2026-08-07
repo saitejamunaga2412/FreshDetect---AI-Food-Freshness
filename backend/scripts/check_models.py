@@ -8,7 +8,7 @@ from ultralytics import YOLO
 def diagnose():
     print("Testing models/weights/best.pt")
     try:
-        model = YOLO("models/weights/best.pt")
+        model = YOLO("weights/fruitseg22_yolov8n_seg.pt")
         print("Classes:", model.names)
     except Exception as e:
         print("Error:", e)
