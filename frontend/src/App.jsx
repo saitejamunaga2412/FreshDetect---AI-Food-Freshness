@@ -22,7 +22,6 @@ import AdminUsers from './pages/AdminUsers';
 import AdminKnowledgeBase from './pages/AdminKnowledgeBase';
 
 function App() {
-  // Apply theme globally on load
   useEffect(() => {
     const saved = localStorage.getItem('freshdetect_settings');
     if (saved) {
@@ -39,6 +38,11 @@ function App() {
         }
       } catch (e) {}
     }
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+    const wakeBackend = () => fetch(`${API_URL}/api/inventory`).catch(() => {});
+    wakeBackend();
+    const interval = setInterval(wakeBackend, 5 * 60 * 1000); // Every 5 minutes
+    return () => clearInterval(interval);
   }, []);
 
   return (

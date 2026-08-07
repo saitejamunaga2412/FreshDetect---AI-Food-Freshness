@@ -4,7 +4,7 @@ import toast from 'react-hot-toast';
 import { Lock, Mail } from 'lucide-react';
 import './Login.css';
 
-const API_URL = import.meta.env.VITE_API_URL;
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 const Login = () => {
   const [email, setEmail] = useState('');
